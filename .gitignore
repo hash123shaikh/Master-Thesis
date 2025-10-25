@@ -1,0 +1,80 @@
+# Generated data files (DO NOT commit large CSVs)
+*.csv
+results/
+output/
+gatedAtn*.csv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# TensorFlow/Keras
+*.h5
+*.hdf5
+saved_models/
+checkpoints/
+logs/
+mlruns/
+
+# Images (unless you want to commit them)
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Large data files (adjust as needed)
+*.txt
+# Except README and requirements
+!requirements.txt
+!README.md
+!LICENSE.txt
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Documentation builds
+docs/_build/
+site/
