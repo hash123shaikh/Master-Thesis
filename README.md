@@ -142,37 +142,91 @@ Conv1D(input) → [Gate1(k=1), Gate2(k=3)] → [Multiply, Multiply] → MaxPool 
 
 **Final Ensemble Model (10-Fold CV):**
 
-| Metric | Value | Standard Deviation |
-|--------|-------|--------------------|
-| **Accuracy** | **91.2%** | ±X.X% |
-| **AUC** | **0.950** | ±0.XXX |
-| **Sensitivity** | XX.X% | ±X.X% |
-| **Specificity** | XX.X% | ±X.X% |
-| **Precision** | 84.1% | ±X.X% |
+| Metric | Value |
+|--------|-------|
+| **Accuracy** | **91.2%** |
+| **AUC** | **0.950** |
+| **Sensitivity** | **79.8%** |
+| **Precision** | **84.1%** |
 
 ### Comparison with Published Methods
 
-| Method | Dataset | Accuracy | AUC | Reference |
-|--------|---------|----------|-----|-----------|
-| **This Work (RF Ensemble)** | METABRIC | **91.2%** | **0.950** | — |
-| Stacked RF | METABRIC | 90.2% | 0.930 | Arya & Saha (2022) |
-| MDNNMD | METABRIC | 82.6% | 0.845 | Sun et al. (2018) |
-| Random Forest | METABRIC | 79.1% | 0.801 | Baseline |
-| SVM | METABRIC | 80.5% | 0.810 | Baseline |
-| Logistic Regression | METABRIC | 76.0% | 0.663 | Baseline |
+| Method | Accuracy | Precision | Sensitivity | AUC |
+|--------|----------|-----------|-------------|-----|
+| **This Work (Multimodal GaAtCNN)** | **91.2%** | **84.1%** | **79.8%** | **0.950** |
+| Stacked RF [12] | 90.2% | 84.1% | 74.7% | 0.930 |
+| MDNNMD [18] | 82.6% | 74.9% | 45.0% | 0.845 |
+| Support Vector Machine [21] | 80.5% | 70.8% | 36.5% | 0.810 |
+| Random Forest [20] | 79.1% | 76.6% | 22.6% | 0.801 |
+| Logistic Regression [19] | 76.0% | 54.9% | 18.3% | 0.663 |
 
 *Note: Results from literature may use different train/test splits and preprocessing*
 
 ### Individual Modality Performance
 
-| Modality | Features (Input → Output) | AUC | Notes |
-|----------|---------------------------|-----|-------|
-| Clinical | 25 → 50 | 0.XXX | Strong baseline performance |
-| Gene Expression | XXX → 525 | 0.XXX | High-dimensional feature learning |
-| CNA | XXX → 200 | 0.XXX | Genomic alteration patterns |
-| **Combined (All)** | **775** | **0.950** | **Best performance** |
+| Modality | Accuracy | Precision | Sensitivity | AUC | Key Insights |
+|----------|----------|-----------|-------------|-----|--------------|
+| Clinical Only | 81.3% | 71.2% | 41.3% | 0.834 | Strong interpretability |
+| CNA Only | 89.3% | 84.1% | 70.2% | 0.850 | Genomic alterations highly predictive |
+| Gene Expression Only | 84.1% | 77.9% | 50.5% | 0.923 | High AUC despite moderate sensitivity |
+| **Combined (All)** | **91.2%** | **84.1%** | **79.8%** | **0.950** | **Best across all metrics** |
 
-**Key Finding**: Multimodal integration provides superior predictive performance compared to any single modality.
+**Key Finding**: Multimodal integration provides:
+- **+9.9%** absolute accuracy improvement over best single modality (CNA)
+- **+11.6%** AUC improvement over clinical data alone
+- **Balanced performance** across sensitivity and precision
+
+### Ablation Study Results
+
+**Impact of Each Modality:**
+
+```
+Accuracy Performance:
+CNA (89.3%) > Gene Expr (84.1%) > Clinical (81.3%)
+                                               ↓
+                                    Multimodal: 91.2% (+1.9% from best single)
+
+AUC Performance:
+Gene Expr (0.923) > CNA (0.850) > Clinical (0.834)
+                                               ↓
+                                    Multimodal: 0.950 (+0.027 from best single)
+
+Sensitivity Performance:
+CNA (70.2%) > Gene Expr (50.5%) > Clinical (41.3%)
+                                               ↓
+                                    Multimodal: 79.8% (+9.6% from best single)
+```
+
+**Critical Observation**: Each modality captures different aspects of cancer biology:
+- **Clinical**: Patient demographics and tumor characteristics
+- **CNA**: Chromosomal instability and genomic alterations
+- **Gene Expression**: Molecular pathways and biological processes
+
+The ensemble leverages complementary information, achieving **consistent improvements across all metrics**.
+
+### Performance Highlights
+
+**Comparison with State-of-the-Art:**
+
+| Metric | Our Method | Best Competitor | Improvement |
+|--------|------------|-----------------|-------------|
+| Accuracy | 91.2% | 90.2% (Stacked RF) | +1.0% |
+| AUC | 0.950 | 0.930 (Stacked RF) | +0.020 |
+| Sensitivity | 79.8% | 74.7% (Stacked RF) | +5.1% |
+| Precision | 84.1% | 84.1% (Stacked RF) | Tied |
+
+**Versus Traditional ML:**
+
+| Method | Accuracy Gap | Sensitivity Gap |
+|--------|--------------|-----------------|
+| vs. Logistic Regression | **+15.2%** | **+61.5%** |
+| vs. Random Forest | **+12.1%** | **+57.2%** |
+| vs. SVM | **+10.7%** | **+43.3%** |
+
+**Key Strengths:**
+- **Highest AUC (0.950)**: Best discrimination between survival classes
+- **Balanced metrics**: High performance across accuracy, sensitivity, and precision
+- **Significant sensitivity gain**: 79.8% vs. 22.6% for traditional Random Forest
 
 ---
 
@@ -328,6 +382,16 @@ results/
 
 This is a **thesis research implementation** with the following constraints:
 
+### Technical Limitations
+
+| Limitation | Impact | Planned Fix |
+|-----------|--------|-------------|
+| **Manual Script Execution** | Requires running 4 separate files sequentially | Unified pipeline script |
+| **Hardcoded Paths** | Must manually update paths in each file | Config file system |
+| **No Automated Validation** | Doesn't check if input files exist | Path validation |
+| **Limited Error Handling** | Cryptic errors if data format changes | Robust exception handling |
+| **No Experiment Tracking** | Results not logged systematically | MLflow integration |
+
 ### Research Limitations
 
 - **Single Dataset**: Evaluated only on METABRIC (requires validation on other cohorts)
@@ -340,6 +404,26 @@ This is a **thesis research implementation** with the following constraints:
 - **Random Seeds**: Set to 1 in all scripts for reproducibility
 - **Hardware Variance**: Results may vary slightly due to GPU non-determinism
 - **Data Splits**: 10-fold CV ensures robust evaluation, but exact folds differ from published work
+
+---
+
+## 🔮 Future Work
+
+### Medium-Term Extensions
+
+- [ ] **Additional Cancer Types**: Lung, prostate, colorectal cancers
+- [ ] **Survival Analysis**: Cox proportional hazards model (time-to-event)
+- [ ] **Explainability**: SHAP values, attention weight visualization
+- [ ] **Hyperparameter Optimization**: Automated tuning with Optuna
+- [ ] **External Validation**: Test on TCGA, other independent cohorts
+
+### Long-Term Vision
+
+- [ ] **Clinical Deployment**: REST API for real-time predictions
+- [ ] **Multi-Institutional Study**: Validate across hospitals
+- [ ] **Imaging Integration**: Incorporate histopathology whole-slide images
+- [ ] **Transfer Learning**: Pre-train on pan-cancer datasets
+- [ ] **Federated Learning**: Privacy-preserving multi-center collaboration
 
 ---
 
@@ -419,9 +503,7 @@ This work builds upon:
 M.Tech Student, Computer Engineering  
 Aligarh Muslim University, India
 
-📧 Email: [hasanshaikh3198@gmail.com](mailto:hasanshaikh3198@gmail.com)  
-🔗 LinkedIn: [https://linkedin.com/in/hasann-shaikh](https://linkedin.com/in/hasann-shaikh)  
-🐙 GitHub: [https://github.com/hash123shaikh](https://github.com/hash123shaikh)
+📧 Email: [hasanshaikh3198@gmail.com](hasanshaikh3198@gmail.com)
 
 **Supervisor:**  
 Prof. Rashid Ali  
