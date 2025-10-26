@@ -20,7 +20,7 @@
   - [Installation](#installation)
   - [Usage](#usage)
 - [Project Structure](#-project-structure)
-- [Future Work](#-future-work)
+- [Limitations & Future Work](#-limitations--future-work)
 - [Citation](#-citation)
 - [Contact](#-contact)
 - [FAQs](#-known-issues--faqs)
@@ -66,6 +66,35 @@
 
 **Impact**: Traditional ML methods miss 75-80% of high-risk patients. Ours misses only 20%.
 
+---
+
+### Visual Performance Comparison
+
+![Performance Comparison: Our Method vs State-of-the-Art](results/figures/method_comparison.png)
+
+**How to read**: Our method (highlighted in gold) achieves top performance across all four metrics. Notice particularly the sensitivity bars (green)—our method significantly outperforms all competitors in identifying high-risk patients.
+
+---
+
+### Performance Heatmap
+
+![Performance Heatmap: All Methods × All Metrics](results/figures/performance_heatmap.png)
+
+**How to read**: Darker green = better performance. Our method (top row) shows consistently dark green across all metrics, demonstrating superior and balanced performance.
+
+---
+
+### Clinical Impact: Sensitivity Comparison
+
+![Sensitivity Comparison: Ability to Identify High-Risk Patients](results/figures/sensitivity_comparison.png)
+
+**Why This Matters**: 
+- **Traditional Random Forest**: Identifies only **2 out of 10** high-risk patients (22.6%)
+- **Our Method**: Identifies **8 out of 10** high-risk patients (79.8%)
+- **Clinical Impact**: Nearly **4× improvement** in catching high-risk cases—critical for timely intervention
+
+---
+
 ### Why Multimodal Matters
 
 **Ablation Study Results:**
@@ -85,49 +114,35 @@ Multimodal (Combined): 91.2% accuracy, 79.8% sensitivity ⬆️ +9.6% sensitivit
 
 ## 🔬 How It Works
 
-### Two-Stage Pipeline
+### Two-Stage Pipeline Overview
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                      STAGE 1: Feature Extraction                │
-└─────────────────────────────────────────────────────────────────┘
-                                ↓
-    ┌──────────────────┐      ┌──────────────────┐      ┌──────────────────┐
-    │  Clinical Data   │      │ Gene Expression  │      │    CNA Data      │
-    │  (25 features)   │      │  (~400 features) │      │  (~200 features) │
-    └────────┬─────────┘      └────────┬─────────┘      └────────┬─────────┘
-             │                         │                          │
-             │                         │                          │
-    ┌────────▼─────────┐      ┌───────▼──────────┐      ┌────────▼─────────┐
-    │ Gated Attention  │      │ Gated Attention  │      │ Gated Attention  │
-    │   CNN Model      │      │   CNN Model      │      │   CNN Model      │
-    └────────┬─────────┘      └────────┬─────────┘      └────────┬─────────┘
-             │                         │                          │
-    ┌────────▼─────────┐      ┌───────▼──────────┐      ┌────────▼─────────┐
-    │  50 features     │      │ 525 features     │      │ 200 features     │
-    └────────┬─────────┘      └────────┬─────────┘      └────────┬─────────┘
-             │                         │                          │
-             └─────────────────────────┴──────────────────────────┘
-                                       │
-┌──────────────────────────────────────┼──────────────────────────────────────┐
-│                      STAGE 2: Ensemble Learning                             │
-└──────────────────────────────────────┼──────────────────────────────────────┘
-                                       │
-                         ┌─────────────▼──────────────┐
-                         │    Concatenate Features    │
-                         │     (775 dimensions)       │
-                         └─────────────┬──────────────┘
-                                       │
-                         ┌─────────────▼──────────────┐
-                         │   Random Forest Ensemble   │
-                         │      (200 trees)           │
-                         └─────────────┬──────────────┘
-                                       │
-                         ┌─────────────▼──────────────┐
-                         │   Survival Prediction      │
-                         │  (High-risk vs Low-risk)   │
-                         └────────────────────────────┘
-```
+![Multimodal Cancer Survival Prediction Pipeline](results/figures/pipeline_overview.png)
+
+Our approach consists of two sequential stages:
+
+**Stage 1: Modality-Specific Feature Extraction**
+- Three independent Gated Attention CNNs process each data type
+- Each CNN learns optimal representations for its modality
+- Extract 50 (clinical), 525 (expression), 200 (CNA) features
+
+**Stage 2: Ensemble Learning**
+- Concatenate all 775 features
+- Train Random Forest with 200 trees
+- Predict survival outcome (high-risk vs low-risk)
+
+---
+
+### Data Flow and Feature Dimensions
+
+![Data Flow and Feature Dimensions](results/figures/data_flow_diagram.png)
+
+**Feature Transformation at Each Stage:**
+- **Clinical**: 25 → 50 features (2.0× expansion)
+- **Gene Expression**: ~400 → 525 features (~1.3× expansion)
+- **CNA**: ~200 → 200 features (1.0× maintained)
+- **Combined**: 775 total features for ensemble prediction
+
+**Key Observation**: Gene Expression CNN expands features (~1.3×), Clinical CNN doubles features (2.0×), while CNA CNN maintains dimensionality (1.0×)
 
 ### Gated Attention Mechanism
 
@@ -191,6 +206,21 @@ Input Features → Conv1D → [Gate₁ ⊗ Features] → MaxPool → Learned Fea
 
 ## 📈 Detailed Results
 
+### Ablation Study: Why Multimodal Integration Matters
+
+![Ablation Study: Modality Contribution Analysis](results/figures/ablation_study.png)
+
+**Four-Panel Analysis:**
+
+- **Top-Left (Accuracy)**: CNA provides best single-modality accuracy (89.3%), but combining all modalities reaches 91.2% (+1.9%)
+- **Top-Right (Precision)**: CNA and multimodal tied at 84.1%, showing genomic features drive precision
+- **Bottom-Left (Sensitivity)**: **Largest improvement** from multimodal integration (+9.6% over best single modality)
+- **Bottom-Right (AUC)**: Gene Expression has best single-modality AUC (0.923), multimodal reaches 0.950 (+0.027)
+
+**Critical Insight**: Each modality excels at different aspects—combining them leverages all strengths.
+
+---
+
 ### Complete Performance Metrics
 
 **Final Model (10-Fold Cross-Validation):**
@@ -222,6 +252,10 @@ Input Features → Conv1D → [Gate₁ ⊗ Features] → MaxPool → Learned Fea
 ### Competitive Analysis
 
 **Improvement Over Baselines:**
+
+![Performance Gain Over Baseline Methods](results/figures/improvement_over_baselines.png)
+
+**Absolute Improvement Over Competing Methods:**
 
 | Baseline | Accuracy Gap | Sensitivity Gap | AUC Gap |
 |----------|--------------|-----------------|---------|
@@ -398,9 +432,37 @@ Master-Thesis-Work/
 
 ---
 
-## ⚠️  Future Work
+## ⚠️ Limitations & Future Work
+
+### Current Limitations
+
+**Technical:**
+- ⚠️ Manual script execution (4 separate files)
+- ⚠️ Hardcoded file paths (must update before running)
+- ⚠️ No automated validation or error handling
+- ⚠️ Results not logged systematically
+
+**Scientific:**
+- 🔬 Single dataset (METABRIC only)
+- 🔬 Binary classification (5-year cutoff only)
+- 🔬 No model explainability (black box predictions)
+- 🔬 Preprocessing not included in pipeline
+
+**Reproducibility:**
+- Random seeds fixed for reproducibility
+- Slight variance possible due to GPU non-determinism
+- 10-fold CV ensures robust evaluation
+
+---
 
 ### Future Enhancements
+
+**Short-Term (Next 3 Months):**
+- [ ] Unified pipeline script (one command for everything)
+- [ ] Config file system (no hardcoded paths)
+- [ ] Automated data validation
+- [ ] MLflow experiment tracking
+- [ ] Unit tests for each component
 
 **Medium-Term (6-12 Months):**
 - [ ] Additional cancer types (lung, prostate, colorectal)
@@ -449,7 +511,7 @@ M.Tech Student, Computer Engineering
 Aligarh Muslim University, India
 
 📧 Email: [hasanshaikh3198@gmail.com](mailto:hasanshaikh3198@gmail.com)  
-💼 LinkedIn: [https://linkedin.com/in/hasann-shaikh](https://linkedin.com/in/hasann-shaikh)  
+💼 LinkedIn: [linkedin.com/in/hasan-shaikh-b77840191](https://linkedin.com/in/hasan-shaikh-b77840191)  
 🐙 GitHub: [@hash123shaikh](https://github.com/hash123shaikh)
 
 **Supervisor:**  
