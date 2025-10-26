@@ -20,7 +20,7 @@
   - [Installation](#installation)
   - [Usage](#usage)
 - [Project Structure](#-project-structure)
-- [Limitations & Future Work](#-limitations--future-work)
+- [Future Work](#-future-work)
 - [Citation](#-citation)
 - [Contact](#-contact)
 - [FAQs](#-known-issues--faqs)
@@ -432,46 +432,16 @@ Master-Thesis-Work/
 
 ---
 
-## ⚠️ Limitations & Future Work
+## ⚠️ Future Work
 
-### Current Limitations
-
-**Technical:**
-- ⚠️ Manual script execution (4 separate files)
-- ⚠️ Hardcoded file paths (must update before running)
-- ⚠️ No automated validation or error handling
-- ⚠️ Results not logged systematically
-
-**Scientific:**
-- 🔬 Single dataset (METABRIC only)
-- 🔬 Binary classification (5-year cutoff only)
-- 🔬 No model explainability (black box predictions)
-- 🔬 Preprocessing not included in pipeline
-
-**Reproducibility:**
-- Random seeds fixed for reproducibility
-- Slight variance possible due to GPU non-determinism
-- 10-fold CV ensures robust evaluation
-
----
-
-### Future Enhancements
-
-**Short-Term (Next 3 Months):**
-- [ ] Unified pipeline script (one command for everything)
-- [ ] Config file system (no hardcoded paths)
-- [ ] Automated data validation
-- [ ] MLflow experiment tracking
-- [ ] Unit tests for each component
-
-**Medium-Term (6-12 Months):**
+**Medium-Term:**
 - [ ] Additional cancer types (lung, prostate, colorectal)
 - [ ] Survival analysis (time-to-event modeling)
 - [ ] SHAP explainability analysis
 - [ ] Hyperparameter optimization (Optuna)
 - [ ] External validation (TCGA, independent cohorts)
 
-**Long-Term Vision (1+ Years):**
+**Long-Term Vision:**
 - [ ] Clinical deployment (REST API)
 - [ ] Multi-institutional validation
 - [ ] Histopathology image integration
@@ -511,7 +481,7 @@ M.Tech Student, Computer Engineering
 Aligarh Muslim University, India
 
 📧 Email: [hasanshaikh3198@gmail.com](mailto:hasanshaikh3198@gmail.com)  
-💼 LinkedIn: [linkedin.com/in/hasan-shaikh-b77840191](https://linkedin.com/in/hasan-shaikh-b77840191)  
+💼 LinkedIn: [https://linkedin.com/in/hasann-shaikh](https://linkedin.com/in/hasann-shaikh)  
 🐙 GitHub: [@hash123shaikh](https://github.com/hash123shaikh)
 
 **Supervisor:**  
