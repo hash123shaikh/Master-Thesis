@@ -4,6 +4,7 @@
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.8.0-orange.svg)](https://tensorflow.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Thesis](https://img.shields.io/badge/Type-Master's%20Thesis-purple.svg)]()
+[![Stars](https://img.shields.io/github/stars/hash123shaikh/Master-Thesis-Work?style=social)](https://github.com/hash123shaikh/Master-Thesis-Work/stargazers)
 
 > **Master's Thesis Research** | Department of Computer Engineering, Aligarh Muslim University  
 > **Author**: Hasan Shaikh | **Supervisor**: Prof. Rashid Ali
